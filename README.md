@@ -1,74 +1,65 @@
-# macOS ARM 汇编 HTTP 服务器
+# Apple ASM Server
 
-这是一个使用 ARM64 汇编语言编写的简单 HTTP 服务器，运行在 macOS 系统上。
+一个使用纯 ARM64 汇编语言编写的模块化 HTTP 服务器，运行在 macOS Apple Silicon 上。
 
 ## 功能特性
 
-- 使用纯 ARM64 汇编语言编写
-- 基于 macOS 系统调用
-- 支持基本的 HTTP GET 请求
-- 监听 8080 端口
+### 已实现
+- ✅ 纯 ARM64 汇编语言
+- ✅ Socket 编程 (socket, bind, listen, accept)
+- ✅ kqueue 事件驱动
+- ✅ HTTP/1.1 支持
+- ✅ 静态文件服务
+- ✅ 404 错误处理
 
-## 系统要求
-
-- macOS 11.0 或更高版本（ARM64 架构，如 Apple Silicon M1/M2/M3）
-- Xcode 命令行工具
-- GNU Make
+### 框架（准备实现）
+- ⏳ HTTP/2 支持
+- ⏳ TLS/SSL 支持
+- ⏳ 反向代理
+- ⏳ 缓存系统
 
 ## 编译和运行
 
-### 编译
-
 ```bash
+# 编译
 make
-```
 
-### 运行
+# 运行
+make run
 
-```bash
+# 或者
 ./server
 ```
 
-### 测试
-
-使用浏览器访问：
-```
-http://localhost:8080
-```
-
-或使用 curl：
-```bash
-curl http://localhost:8080
-```
+服务器将在 http://localhost:8080 监听。
 
 ## 项目结构
 
 ```
-.
-├── README.md      # 项目说明文档
-├── Makefile       # 编译脚本
-├── .gitignore     # Git 忽略文件
-└── server.s       # 汇编源代码
+src/
+├── boot/              # 启动入口
+├── config/            # 配置
+├── core/              # 核心模块
+│   ├── event/         # 事件驱动 (kqueue)
+│   └── connection/    # 连接管理
+├── http/              # HTTP 协议
+│   ├── parser/        # 请求解析
+│   ├── builder/       # 响应构建
+│   └── frame/         # HTTP/2 帧
+├── tls/               # TLS/SSL
+├── filesystem/        # 文件系统
+├── proxy/             # 反向代理
+├── cache/             # 缓存系统
+├── utils/             # 工具函数
+└── error/             # 错误处理
 ```
 
-## 实现原理
+## 技术细节
 
-服务器使用以下系统调用实现基本的 HTTP 功能：
-
-1. `socket()` - 创建 TCP socket
-2. `bind()` - 绑定到 8080 端口
-3. `listen()` - 开始监听连接
-4. `accept()` - 接受客户端连接
-5. `read()` - 读取 HTTP 请求
-6. `write()` - 发送 HTTP 响应
-7. `close()` - 关闭连接
-
-## ARM64 系统调用约定
-
-- `x0-x7` - 传递参数
-- `x16` - 存储系统调用号
-- `svc #0` - 触发系统调用
-- `x0` - 返回结果
+- 使用 macOS 系统调用 (svc #0)
+- ARM64 指令集
+- 非阻塞 I/O (kqueue)
+- 模块化架构
 
 ## 许可证
 
